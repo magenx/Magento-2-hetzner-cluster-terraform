@@ -91,7 +91,6 @@ resource "hcloud_server" "servers" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-}
 
   provisioner "remote-exec" {
     inline = [
