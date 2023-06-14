@@ -50,12 +50,9 @@ resource "hcloud_placement_group" "this" {
 # Create load balancer
 resource "hcloud_load_balancer" "this" {
   name        = "${var.project}-load-balancer"
+  load_balancer_type = "lb11"
   algorithm  {
     type = "round_robin"
-  }
-  target {
-    type  = "label_selector"
-    value = "type=frontend"
   }
   labels  = {
     "type" = hcloud_load_balancer.this.name
@@ -66,7 +63,6 @@ resource "hcloud_load_balancer" "this" {
 variable "server_types" {
   description = "A map of server types"
   type        = map
-
   default = {
     mariadb       = "cax11"
     elasticsearch = "cax11"
@@ -85,6 +81,7 @@ resource "hcloud_server" "servers" {
   server_type = each.value
   image       = "debian-11"
   ssh_keys    = [local.ssh_key]
+  placement_group_id = hcloud_placement_group.this.id
   labels      = {
     "type" = each.key
     "app"  = "magento"
@@ -94,9 +91,7 @@ resource "hcloud_server" "servers" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  placement_group {
-    placement_group_id = hcloud_placement_group.this.id
-  }
+}
 
   provisioner "remote-exec" {
     inline = [
