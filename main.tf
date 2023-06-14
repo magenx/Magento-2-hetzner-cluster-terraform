@@ -34,8 +34,6 @@ resource "hcloud_network" "this" {
   name           = "${var.project}-network"
   ip_range       = "10.0.0.0/16"
   type           = "cloud"
-  ip_range_size  = 24
-  protection     = true
   labels         = {
     "type" = hcloud_network.this.name
   }
@@ -43,7 +41,7 @@ resource "hcloud_network" "this" {
 
 # Create placement group
 resource "hcloud_placement_group" "this" {
-  name        = "${project}-placement-group"
+  name        = "${var.project}-placement-group"
   type        = "spread"
   labels      = {
     "type" = hcloud_placement_group.this.name
@@ -52,7 +50,7 @@ resource "hcloud_placement_group" "this" {
 
 # Create load balancer
 resource "hcloud_load_balancer" "this" {
-  name        = "${project}-load-balancer"
+  name        = "${var.project}-load-balancer"
   algorithm   = "round_robin"
   target {
     type  = "label_selector"
