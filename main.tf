@@ -34,7 +34,9 @@ resource "hcloud_network" "this" {
   name           = "${var.project}-network"
   ip_range       = "10.0.0.0/16"
   labels         = {
-    "type" = hcloud_network.this.name
+    "project" = "${var.project}"
+    "app"     = "magento"
+    "env"     = "developer"
   }
 }
 
@@ -43,7 +45,9 @@ resource "hcloud_placement_group" "this" {
   name        = "${var.project}-placement-group"
   type        = "spread"
   labels      = {
-    "type" = hcloud_placement_group.this.name
+    "project" = "${var.project}"
+    "app"     = "magento"
+    "env"     = "developer"
   }
 }
 
@@ -55,7 +59,9 @@ resource "hcloud_load_balancer" "this" {
     type = "round_robin"
   }
   labels  = {
-    "type" = hcloud_load_balancer.this.name
+    "project" = "${var.project}"
+    "app"     = "magento"
+    "env"     = "developer"
   }
 }
 
