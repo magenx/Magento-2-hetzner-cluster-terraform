@@ -102,10 +102,9 @@ resource "hcloud_server" "servers" {
   }
 }
 
-# Output the server IP addresses
 output "server_ips" {
   value = {
-    for server_name, server : hcloud_server.servers :
-      server_name => server.ipv4_address
+    for server_name, server in hcloud_server.servers :
+    server_name => server.ipv4_address
   }
 }
