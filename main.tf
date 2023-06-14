@@ -19,10 +19,8 @@ variable "project" {
   default     = "magenx"
 }
 
-variable "ssh_key" {
-  description = "The SSH key for server access"
-  type        = string
-  default     = "${var.project}-admin"
+locals {
+  ssh_key = "${var.project}-admin"
 }
 
 # Create network with public IPv4 and private CIDR block
@@ -81,7 +79,7 @@ resource "hcloud_server" "servers" {
   name        = each.key
   server_type = each.value
   image       = "debian-11"
-  ssh_keys    = [var.ssh_key]
+  ssh_keys    = [local.ssh_key]
   labels      = {
     "type" = each.key
     "app"  = "magento"
