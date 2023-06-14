@@ -33,7 +33,6 @@ locals {
 resource "hcloud_network" "this" {
   name           = "${var.project}-network"
   ip_range       = "10.0.0.0/16"
-  type           = "cloud"
   labels         = {
     "type" = hcloud_network.this.name
   }
@@ -51,12 +50,14 @@ resource "hcloud_placement_group" "this" {
 # Create load balancer
 resource "hcloud_load_balancer" "this" {
   name        = "${var.project}-load-balancer"
-  algorithm   = "round_robin"
+  algorithm  {
+    type = "round_robin"
+  }
   target {
     type  = "label_selector"
-    label = "type=frontend"
+    value = "type=frontend"
   }
-  labels      = {
+  labels  = {
     "type" = hcloud_load_balancer.this.name
   }
 }
