@@ -8,6 +8,12 @@ terraform {
   }
 }
 
+# Declare the hcloud_token variable
+variable "hcloud_token" {
+  description = "Hetzner Cloud API token"
+  type        = string
+}
+
 provider "hcloud" {
   token = var.hcloud_token
 }
