@@ -28,6 +28,21 @@ locals {
   ssh_key = "${var.project}-admin"
 }
 
+# Define server types
+variable "server_types" {
+  description = "A map of server types"
+  type        = map
+  default = {
+    mariadb       = "cax11"
+    elasticsearch = "cax11"
+    redis         = "cax11"
+    rabbitmq      = "cax11"
+    media         = "cax11"
+    varnish       = "cax11"
+    frontend      = "cax11"
+  }
+}
+
 # Create network with public IPv4 and private CIDR block
 resource "hcloud_network" "this" {
   name           = "${var.project}-network"
@@ -61,21 +76,6 @@ resource "hcloud_load_balancer" "this" {
     "project" = "${var.project}"
     "app"     = "magento"
     "env"     = "developer"
-  }
-}
-
-# Define server types
-variable "server_types" {
-  description = "A map of server types"
-  type        = map
-  default = {
-    mariadb       = "cax11"
-    elasticsearch = "cax11"
-    redis         = "cax11"
-    rabbitmq      = "cax11"
-    media         = "cax11"
-    varnish       = "cax11"
-    frontend      = "cax11"
   }
 }
 
