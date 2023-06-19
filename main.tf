@@ -113,8 +113,11 @@ resource "hcloud_server" "this" {
   name        = each.key
   server_type = each.value
   image       = "debian-11"
+  keep_disk   = true
   ssh_keys    = ["${var.project}-admin"]
   placement_group_id = hcloud_placement_group.this.id
+  #delete_protection  = true
+  #rebuild_protection = true
   labels      = {
     "type" = each.key
     "app"  = "magento"
@@ -124,20 +127,7 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-
-  connection {
-    type        = "ssh"
-    user        = "root"
-    private_key = tls_private_key.this.private_key_openssh
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "curl https://ifconfig.io",
-      "export VAR1=value1",
-      "export VAR2=value2",
-    ]
-  }
+  user_data = ""
 }
 
 output "ips" {
