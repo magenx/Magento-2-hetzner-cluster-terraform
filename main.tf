@@ -130,7 +130,7 @@ resource "hcloud_load_balancer_service" "this" {
   load_balancer_id = hcloud_load_balancer.this.id
   protocol         = "http"
   health_check {
-    protocol = http
+    protocol = "http"
     interval = 5
     timeout  = 5
     retries  = 2
