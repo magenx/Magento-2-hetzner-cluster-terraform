@@ -51,6 +51,7 @@ resource "tls_private_key" "this" {
 resource "hcloud_ssh_key" "this" {
   name       = "${var.project}-${var.app}"
   public_key = tls_private_key.this.public_key_openssh
+  labels     = local.labels
 }
 
 # Define server types
