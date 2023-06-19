@@ -24,6 +24,16 @@ variable "project" {
   type        = string
 }
 
+variable "env" {
+  description = "Environment name"
+  type        = string
+}
+
+variable "app" {
+  description = "Application name"
+  type        = string
+}
+
 locals {
   labels = {
     "project" = var.project
