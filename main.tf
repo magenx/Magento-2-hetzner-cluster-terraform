@@ -34,6 +34,11 @@ variable "app" {
   type        = string
 }
 
+variable "protection" {
+  description = "Enable or disable delete protection"
+  type        = string
+}
+
 locals {
   labels = {
     "project" = var.project
@@ -49,9 +54,19 @@ resource "tls_private_key" "this" {
 
 # Add public ssh key to Hetzner
 resource "hcloud_ssh_key" "this" {
-  name       = "${var.project}-${var.app}"
+  name       = "${var.project}-${var.app}-ssh"
   public_key = tls_private_key.this.public_key_openssh
   labels     = local.labels
+}
+
+# Floating IP
+resource "hcloud_floating_ip" "this" {
+  name      = "${var.project}-varnish-ip"
+  description = "Floating IP for varnish server"
+  type      = "ipv4"
+  server_id = hcloud_server.this["varnish"].id
+  delete_protection = var.protection
+  labels    = local.labels
 }
 
 # Define server types
@@ -73,6 +88,7 @@ variable "server_types" {
 resource "hcloud_network" "this" {
   name           = "${var.project}-network"
   ip_range       = "10.0.0.0/16"
+  delete_protection = var.protection
   labels         = local.labels
 }
 
@@ -85,8 +101,9 @@ resource "hcloud_placement_group" "this" {
 
 # Create load balancer
 resource "hcloud_load_balancer" "this" {
-  name        = "${var.project}-load-balancer"
+  name   = "${var.project}-load-balancer"
   load_balancer_type = "lb11"
+  delete_protection  = var.protection
   algorithm  {
     type = "round_robin"
   }
@@ -110,8 +127,18 @@ resource "hcloud_load_balancer_target" "this" {
 
 # Add load balancer service
 resource "hcloud_load_balancer_service" "this" {
-    load_balancer_id = hcloud_load_balancer.this.id
-    protocol         = "http"
+  load_balancer_id = hcloud_load_balancer.this.id
+  protocol         = "http"
+  health_check {
+    protocol = http
+    interval = 5
+    timeout  = 5
+    retries  = 2
+    http {
+      path         = "/"
+      status_codes = ["2??", "3??"]
+    }
+   }
 }
 
 # Create servers
@@ -123,8 +150,8 @@ resource "hcloud_server" "this" {
   keep_disk   = true
   ssh_keys    = [hcloud_ssh_key.this.name]
   placement_group_id = hcloud_placement_group.this.id
-  #delete_protection  = true
-  #rebuild_protection = true
+  delete_protection  = var.protection
+  rebuild_protection = var.protection
   labels      = merge(local.labels, {
     "type" = each.key
   })
