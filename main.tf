@@ -129,7 +129,6 @@ resource "hcloud_server" "this" {
     type        = "ssh"
     user        = "root"
     private_key = tls_private_key.this.private_key_openssh
-    host        = hcloud_server.this[each.key].ipv4_address
   }
 
   provisioner "remote-exec" {
