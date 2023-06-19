@@ -24,6 +24,14 @@ variable "project" {
   type        = string
 }
 
+locals {
+  labels = {
+    "project" = var.project
+    "app"     = var.app
+    "env"     = var.env
+  }
+}
+
 # Generate ED25519 ssh key
 resource "tls_private_key" "this" {
   algorithm = "ED25519"
@@ -54,22 +62,14 @@ variable "server_types" {
 resource "hcloud_network" "this" {
   name           = "${var.project}-network"
   ip_range       = "10.0.0.0/16"
-  labels         = {
-    "project" = "${var.project}"
-    "app"     = "magento"
-    "env"     = "developer"
-  }
+  labels         = local.labels
 }
 
 # Create placement group
 resource "hcloud_placement_group" "this" {
   name        = "${var.project}-placement-group"
   type        = "spread"
-  labels      = {
-    "project" = "${var.project}"
-    "app"     = "magento"
-    "env"     = "developer"
-  }
+  labels      = local.labels
 }
 
 # Create load balancer
@@ -79,11 +79,7 @@ resource "hcloud_load_balancer" "this" {
   algorithm  {
     type = "round_robin"
   }
-  labels  = {
-    "project" = "${var.project}"
-    "app"     = "magento"
-    "env"     = "developer"
-  }
+  labels = local.labels
 }
 
 # Configure load balancer network
@@ -102,7 +98,7 @@ resource "hcloud_load_balancer_target" "this" {
 }
 
 # Add load balancer service
-resource "hcloud_load_balancer_service" "load_balancer_service" {
+resource "hcloud_load_balancer_service" "this" {
     load_balancer_id = hcloud_load_balancer.this.id
     protocol         = "http"
 }
@@ -114,15 +110,13 @@ resource "hcloud_server" "this" {
   server_type = each.value
   image       = "debian-11"
   keep_disk   = true
-  ssh_keys    = ["${var.project}-admin"]
+  ssh_keys    = [hcloud_ssh_key.this.name]
   placement_group_id = hcloud_placement_group.this.id
   #delete_protection  = true
   #rebuild_protection = true
-  labels      = {
+  labels      = merge(local.labels, {
     "type" = each.key
-    "app"  = "magento"
-    "env"  = "developer"
-  }
+  })
   network {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
