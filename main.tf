@@ -113,7 +113,7 @@ resource "hcloud_server" "this" {
   name        = each.key
   server_type = each.value
   image       = "debian-11"
-  ssh_keys    = [${var.project}-admin]
+  ssh_keys    = ["${var.project}-admin"]
   placement_group_id = hcloud_placement_group.this.id
   labels      = {
     "type" = each.key
