@@ -131,6 +131,7 @@ resource "hcloud_load_balancer_service" "this" {
   protocol         = "http"
   health_check {
     protocol = "http"
+    port     = 80
     interval = 5
     timeout  = 5
     retries  = 2
