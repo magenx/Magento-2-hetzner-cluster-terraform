@@ -24,8 +24,15 @@ variable "project" {
   type        = string
 }
 
-locals {
-  ssh_key = "${var.project}-admin"
+# Generate ED25519 ssh key
+resource "tls_private_key" "this" {
+  algorithm = "ED25519"
+}
+
+# Add public ssh key to Hetzner
+resource "hcloud_ssh_key" "this" {
+  name       = "${var.project}-admin"
+  public_key = tls_private_key.this.public_key_openssh
 }
 
 # Define server types
@@ -79,13 +86,34 @@ resource "hcloud_load_balancer" "this" {
   }
 }
 
+# Configure load balancer network
+resource "hcloud_load_balancer_network" "this" {
+  load_balancer_id = hcloud_load_balancer.this.id
+  network_id       = hcloud_network.this.id
+  enable_public_interface = false
+}
+
+# Add load balancer target
+resource "hcloud_load_balancer_target" "this" {
+  load_balancer_id = hcloud_load_balancer.this.id
+  type             = "label_selector"
+  label_selector   = "type=frontend"
+  use_private_ip   = true
+}
+
+# Add load balancer service
+resource "hcloud_load_balancer_service" "load_balancer_service" {
+    load_balancer_id = hcloud_load_balancer.this.id
+    protocol         = "http"
+}
+
 # Create servers
-resource "hcloud_server" "servers" {
+resource "hcloud_server" "this" {
   for_each    = var.server_types
   name        = each.key
   server_type = each.value
   image       = "debian-11"
-  ssh_keys    = [local.ssh_key]
+  ssh_keys    = [${var.project}-admin]
   placement_group_id = hcloud_placement_group.this.id
   labels      = {
     "type" = each.key
@@ -97,6 +125,13 @@ resource "hcloud_server" "servers" {
     ip         = hcloud_network.this.ip_range
   }
 
+  connection {
+    type        = "ssh"
+    user        = "root"
+    private_key = tls_private_key.this.private_key_openssh
+    host        = hcloud_server.this.ipv4_address
+  }
+
   provisioner "remote-exec" {
     inline = [
       "curl https://ifconfig.io",
@@ -106,9 +141,9 @@ resource "hcloud_server" "servers" {
   }
 }
 
-output "server_ips" {
+output "ips" {
   value = {
-    for server_name, server in hcloud_server.servers :
+    for server_name, server in hcloud_server.this :
     server_name => server.ipv4_address
   }
 }
