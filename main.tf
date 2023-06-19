@@ -36,7 +36,7 @@ variable "app" {
 
 variable "protection" {
   description = "Enable or disable delete protection"
-  type        = string
+  type        = bool
 }
 
 locals {
