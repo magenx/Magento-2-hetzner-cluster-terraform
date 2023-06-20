@@ -8,43 +8,8 @@ terraform {
   }
 }
 
-# Declare the hcloud_token variable
-variable "hcloud_token" {
-  description = "Hetzner Cloud API token"
-  type        = string
-}
-
 provider "hcloud" {
   token = var.hcloud_token
-}
-
-# Define variables
-variable "project" {
-  description = "The name of the project"
-  type        = string
-}
-
-variable "env" {
-  description = "Environment name"
-  type        = string
-}
-
-variable "app" {
-  description = "Application name"
-  type        = string
-}
-
-variable "protection" {
-  description = "Enable or disable delete protection"
-  type        = bool
-}
-
-locals {
-  labels = {
-    "project" = var.project
-    "app"     = var.app
-    "env"     = var.env
-  }
 }
 
 # Generate ED25519 ssh key
@@ -67,21 +32,6 @@ resource "hcloud_floating_ip" "this" {
   server_id = hcloud_server.this["varnish"].id
   delete_protection = var.protection
   labels    = local.labels
-}
-
-# Define server types
-variable "server_types" {
-  description = "A map of server types"
-  type        = map
-  default = {
-    mariadb       = "cax11"
-    elasticsearch = "cax11"
-    redis         = "cax11"
-    rabbitmq      = "cax11"
-    media         = "cax11"
-    varnish       = "cax11"
-    frontend      = "cax11"
-  }
 }
 
 # Create network with public IPv4 and private CIDR block
@@ -144,7 +94,7 @@ resource "hcloud_load_balancer_service" "this" {
 
 # Create servers
 resource "hcloud_server" "this" {
-  for_each    = var.server_types
+  for_each    = var.servers
   name        = each.key
   server_type = each.value
   image       = "debian-11"
