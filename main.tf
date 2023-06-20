@@ -116,11 +116,11 @@ resource "hcloud_server" "this" {
   }
   user_data = templatefile("${path.module}/user_data.tpl", {
     server_name = each.key
-    mariadb_server_ip      = hcloud_server.this["mariadb"].network.*.ip[0],
-    redis_server_ip        = hcloud_server.this["redis"].network.*.ip[0],
-    rabbitmq_server_ip     = hcloud_server.this["rabbitmq"].network.*.ip[0],
-    varnish_server_ip      = hcloud_server.this["varnish"].network.*.ip[0],
-    elasticsearch_server_ip = hcloud_server.this["elasticsearch"].network.*.ip[0],
+    mariadb_server_ip      = hcloud_server.this["mariadb"].network.*.ip[0]
+    redis_server_ip        = hcloud_server.this["redis"].network.*.ip[0]
+    rabbitmq_server_ip     = hcloud_server.this["rabbitmq"].network.*.ip[0]
+    varnish_server_ip      = hcloud_server.this["varnish"].network.*.ip[0]
+    elasticsearch_server_ip = hcloud_server.this["elasticsearch"].network.*.ip[0]
   })
 }
 
