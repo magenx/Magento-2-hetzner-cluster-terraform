@@ -106,11 +106,30 @@ resource "hcloud_server" "this" {
   labels      = merge(local.labels, {
     "type" = each.key
   })
+  public_net {
+    ipv4_enabled = each.key == "varnish" ? true : false
+    ipv6_enabled = false
+  }
   network {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  user_data = ""
+  user_data = <<-EOF
+    #!/bin/bash
+      SERVER_TYPE="${each.key}"
+      PRIVATE_IP=$(curl -s http://169.254.169.254/hetzner/v1/metadata/private-networks | grep -m1 ip: | awk '{print $NF}')
+    ${each.key != "frontend" ? <<-OTHER : ""}
+      INSTALL_${SERVER_TYPE^^}='y' \
+      ${SERVER_TYPE^^}_SERVER_IP='$PRIVATE_IP' \
+    OTHER
+    ${each.key == "frontend" ? <<-FRONTEND : ""}
+      MARIADB_SERVER_IP="${hcloud_server.this["mariadb"][0].network.*.ip[0]}" \
+      REDIS_SERVER_IP="${hcloud_server.this["redis"][0].network.*.ip[0]}" \
+      RABBITMQ_SERVER_IP="${hcloud_server.this["rabbitmq"][0].network.*.ip[0]}" \
+      VARNISH_SERVER_IP="${hcloud_server.this["varnish"][0].network.*.ip[0]}" \
+      ELASTICSEARCH_SERVER_IP="${hcloud_server.this["elasticsearch"][0].network.*.ip[0]}"
+    FRONTEND
+EOF
 }
 
 output "ips" {
