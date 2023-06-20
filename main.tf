@@ -119,8 +119,8 @@ resource "hcloud_server" "this" {
       SERVER_TYPE="${each.key}"
       PRIVATE_IP=$(curl -s http://169.254.169.254/hetzner/v1/metadata/private-networks | grep -m1 ip: | awk '{print $NF}')
     ${each.key != "frontend" ? <<-OTHER : ""}
-      INSTALL_${SERVER_TYPE^^}='y' \
-      ${SERVER_TYPE^^}_SERVER_IP='$PRIVATE_IP' \
+      INSTALL_$${SERVER_TYPE^^}='y' \
+      $${SERVER_TYPE^^}_SERVER_IP='$$PRIVATE_IP' \
     OTHER
     ${each.key == "frontend" ? <<-FRONTEND : ""}
       MARIADB_SERVER_IP="${hcloud_server.this["mariadb"][0].network.*.ip[0]}" \
