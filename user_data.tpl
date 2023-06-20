@@ -9,9 +9,10 @@ PRIVATE_IP=$(curl -s http://169.254.169.254/hetzner/v1/metadata/private-networks
 %{ endif ~}
 
 %{ if server_name == "frontend" ~}
-  MARIADB_SERVER_IP="${hcloud_server.this["mariadb"].network.*.ip[0]}"
-  REDIS_SERVER_IP="${hcloud_server.this["redis"].network.*.ip[0]}"
-  RABBITMQ_SERVER_IP="${hcloud_server.this["rabbitmq"].network.*.ip[0]}"
-  VARNISH_SERVER_IP="${hcloud_server.this["varnish"].network.*.ip[0]}"
-  ELASTICSEARCH_SERVER_IP="${hcloud_server.this["elasticsearch"].network.*.ip[0]}"
+  MARIADB_SERVER_IP="${mariadb_server_ip}"
+  REDIS_SERVER_IP="${redis_server_ip}"
+  RABBITMQ_SERVER_IP="${rabbitmq_server_ip}"
+  VARNISH_SERVER_IP="${varnish_server_ip}"
+  ELASTICSEARCH_SERVER_IP="${elasticsearch_server_ip}"
+  MEDIA_SERVER_IP="${media_server_ip}"
 %{ endif ~}
