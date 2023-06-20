@@ -32,9 +32,11 @@ locals {
   }
 }
 
-## HCL type variable in terraform cloud
+## HCL type variable in Terraform Cloud
+## { mariadb = "cax11", elasticsearch = "cax11", redis = "cax11", rabbitmq = "cax11", media = "cax11", varnish = "cax11", frontend = "cax11" }
 variable "servers" {
   description = "A map of server types"
   type        = map(string)
   default     = {}
 }
+
