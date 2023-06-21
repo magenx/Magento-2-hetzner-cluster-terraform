@@ -114,7 +114,7 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  user_data = data.cloudinit_config.this[each.key].rendered
+  user_data = data.cloudinit_config.this[each.key].content
 }
 
 ## Server configuration cloud-init
