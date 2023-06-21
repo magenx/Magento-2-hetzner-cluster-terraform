@@ -4,6 +4,12 @@ variable "hcloud_token" {
   type        = string
 }
 
+variable "network_zone" {
+  description = "Name of network zone"
+  type        = string
+  default     = "eu-central"
+}
+
 variable "project" {
   description = "The name of the project"
   type        = string
