@@ -114,11 +114,7 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  user_data = <<-EOF
-        #cloud-config
-        ${var.general_user_data}
-        ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
-  EOF
+  user_data = "#cloud-config"
 }
 
 ## Output IPs
