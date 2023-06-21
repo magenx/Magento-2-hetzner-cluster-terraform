@@ -71,7 +71,7 @@ resource "hcloud_load_balancer_network" "this" {
 resource "hcloud_load_balancer_target" "this" {
   load_balancer_id = hcloud_load_balancer.this.id
   type             = "label_selector"
-  label_selector   = "type=frontend"
+  label_selector   = "name=frontend"
   use_private_ip   = true
 }
 
@@ -104,7 +104,7 @@ resource "hcloud_server" "this" {
   delete_protection  = var.protection
   rebuild_protection = var.protection
   labels      = merge(local.labels, {
-    "type" = each.key
+    "name" = each.key
   })
   public_net {
     ipv4_enabled = each.key == "varnish" ? true : false
@@ -114,7 +114,22 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  user_data = ""
+  user_data = cloudinit_config.this.rendered[each.key]
+}
+
+## Server configuration cloud-init
+resource "cloudinit_config" "this" {
+  dynamic "part" {
+    for_each = var.servers
+    content {
+      content_type = "text/cloud-config"
+      filename     = "${part.key}-user_data.cfg"
+      content = <<-EOF
+        ${var.general_user_data}
+        ${part.key == "frontend" ? var.frontend_user_data : var.other_user_data}
+      EOF
+    }
+  }
 }
 
 output "ips" {
@@ -123,3 +138,5 @@ output "ips" {
     server_name => server.ipv4_address
   }
 }
+
+
