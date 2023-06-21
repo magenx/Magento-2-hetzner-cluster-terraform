@@ -119,6 +119,8 @@ resource "hcloud_server" "this" {
 
 ## Server configuration cloud-init
 data "cloudinit_config" "this" {
+  gzip          = false
+  base64_encode = false
   for_each = var.servers
   part {
       content_type = "text/cloud-config"
