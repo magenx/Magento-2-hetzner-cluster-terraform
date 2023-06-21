@@ -129,17 +129,3 @@ resource "hcloud_server" "this" {
     ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
   EOF
 }
-
-## Output IPs
-output "ips" {
-  value = {
-    for server_name, server in hcloud_server.this :
-    server_name => server.ipv4_address
-  }
-}
-
-## Output ssh key
-output "ssh_key" {
-  value = tls_private_key.this.private_key_openssh
-  sensitive = true
-}
