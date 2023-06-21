@@ -138,9 +138,10 @@ output "ips" {
     server_name => server.ipv4_address
   }
 }
+
 locals {
   rendered_user_data = {
-    for key, config in data.cloudinit_config.this : key => config.rendered
+    for index, config in data.cloudinit_config.this : index => config.rendered
   }
 }
 output "cloudinit" {
