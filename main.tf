@@ -141,6 +141,6 @@ output "ips" {
 
 output "rendered_user_data" {
   value = {
-    for server_name, config in cloudinit_config.this : server_name => config.rendered
+    for server_name, config in data.cloudinit_config.this : server_name => config.rendered
   }
 }
