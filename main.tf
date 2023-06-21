@@ -61,6 +61,7 @@ resource "hcloud_placement_group" "this" {
 resource "hcloud_load_balancer" "this" {
   name   = "${var.project}-load-balancer"
   load_balancer_type = "lb11"
+  location           = hcloud_server.this.location
   network_zone       = hcloud_network_subnet.this.network_zone
   delete_protection  = var.protection
   algorithm  {
