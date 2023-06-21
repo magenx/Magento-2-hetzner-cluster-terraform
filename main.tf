@@ -114,13 +114,13 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  user_data = data.cloudinit_config.this[each.key].content
+  user_data = data.cloudinit_config.this[each.key].rendered
 }
 
 ## Server configuration cloud-init
 data "cloudinit_config" "this" {
   for_each = var.servers
-    content {
+  part {
       content_type = "text/cloud-config"
       filename     = "${part.key}-user_data.cfg"
       content = <<-EOF
@@ -138,5 +138,5 @@ output "ips" {
 }
 
 output "rendered_user_data" {
-  value = data.cloudinit_config.this["frontend"].content
+  value = data.cloudinit_config.this["frontend"].rendered
 }
