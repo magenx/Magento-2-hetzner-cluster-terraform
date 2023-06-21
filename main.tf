@@ -114,25 +114,14 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
-  user_data = data.cloudinit_config.this[each.key].part.0.content
-}
-
-## Server configuration cloud-init
-data "cloudinit_config" "this" {
-  gzip          = false
-  base64_encode = false
-  for_each = var.servers
-  part {
-      content_type = "text/cloud-config"
-      filename     = "${each.key}_user_data.cfg"
-      content = <<-EOF
+  user_data = <<-EOF
         #cloud-config
         ${var.general_user_data}
         ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
-      EOF
-    }
-  }
+  EOF
+}
 
+## Output IPs
 output "ips" {
   value = {
     for server_name, server in hcloud_server.this :
@@ -140,6 +129,3 @@ output "ips" {
   }
 }
 
-output "rendered_user_data" {
-  value = data.cloudinit_config.this
-}
