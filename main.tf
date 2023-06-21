@@ -122,7 +122,7 @@ data "cloudinit_config" "this" {
   for_each = var.servers
   part {
       content_type = "text/cloud-config"
-      filename     = "${each.key}-user_data.cfg"
+      filename     = "${each.key}_user_data.cfg"
       content = <<-EOF
         ${var.general_user_data}
         ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
@@ -138,5 +138,5 @@ output "ips" {
 }
 
 output "rendered_user_data" {
-  value = data.cloudinit_config.this["frontend"].rendered
+  value = data.cloudinit_config.this
 }
