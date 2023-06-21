@@ -141,4 +141,5 @@ output "ips" {
 ## Output ssh key
 output "ssh_key" {
   value = tls_private_key.this.private_key_openssh
+  sensitive = true
 }
