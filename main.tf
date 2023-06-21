@@ -126,6 +126,7 @@ data "cloudinit_config" "this" {
       content_type = "text/cloud-config"
       filename     = "${each.key}_user_data.cfg"
       content = <<-EOF
+        #cloud-config
         ${var.general_user_data}
         ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
       EOF
