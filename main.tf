@@ -122,10 +122,10 @@ data "cloudinit_config" "this" {
   for_each = var.servers
   part {
       content_type = "text/cloud-config"
-      filename     = "${part.key}-user_data.cfg"
+      filename     = "${each.key}-user_data.cfg"
       content = <<-EOF
         ${var.general_user_data}
-        ${part.key == "frontend" ? var.frontend_user_data : var.other_user_data}
+        ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
       EOF
     }
   }
