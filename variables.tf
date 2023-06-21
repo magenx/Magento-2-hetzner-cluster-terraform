@@ -40,3 +40,26 @@ variable "servers" {
   default     = {}
 }
 
+variable "general_user_data" {
+  type    = string
+  default = <<-EOF
+    # General configuration
+    # ...
+  EOF
+}
+
+variable "frontend_user_data" {
+  type    = string
+  default = <<-EOF
+    # Frontend server specific configuration
+    # ...
+  EOF
+}
+
+variable "other_user_data" {
+  type    = string
+  default = <<-EOF
+    # Non-frontend server specific configuration
+    # ...
+  EOF
+}
