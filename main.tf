@@ -42,6 +42,14 @@ resource "hcloud_network" "this" {
   labels         = local.labels
 }
 
+# Create network subnet
+resource "hcloud_network_subnet" "this" {
+  network_id   = hcloud_network.this.id
+  type         = "cloud"
+  network_zone = var.network_zone
+  ip_range     = "10.0.0.0/24"
+}
+
 # Create placement group
 resource "hcloud_placement_group" "this" {
   name        = "${var.project}-placement-group"
