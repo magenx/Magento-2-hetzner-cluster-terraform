@@ -118,7 +118,7 @@ resource "hcloud_server" "this" {
 }
 
 ## Server configuration cloud-init
-resource "cloudinit_config" "this" {
+data "cloudinit_config" "this" {
   dynamic "part" {
     for_each = var.servers
     content {
