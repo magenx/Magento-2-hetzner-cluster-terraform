@@ -139,11 +139,8 @@ output "ips" {
   }
 }
 
-locals {
-  rendered_user_data = {
-    for index, config in data.cloudinit_config.this : index => config.rendered
+output "rendered_user_data" {
+  value = {
+    for server_name, config in cloudinit_config.this : server_name => config.rendered
   }
-}
-output "cloudinit" {
-  value = local.rendered_user_data
 }
