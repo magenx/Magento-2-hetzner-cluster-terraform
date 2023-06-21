@@ -140,5 +140,5 @@ output "ips" {
 }
 
 output "rendered_user_data" {
-  value = data.cloudinit_config.this["frontend"].part[0].content
+  value = data.cloudinit_config.this["frontend"].part.0.content
 }
