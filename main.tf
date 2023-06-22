@@ -126,6 +126,9 @@ resource "hcloud_server" "this" {
     network_id = hcloud_network.this.id
     ip         = hcloud_network.this.ip_range
   }
+  depends_on = [
+    hcloud_network_subnet.this
+  ]
   user_data = <<-EOF
     #cloud-config
     ${var.general_user_data}
