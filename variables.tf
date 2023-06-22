@@ -48,24 +48,15 @@ variable "servers" {
 
 variable "general_user_data" {
   type    = string
-  default = <<-EOF
-    # General configuration
-    # ...
-  EOF
+  default = "# General configuration"
 }
 
 variable "frontend_user_data" {
   type    = string
-  default = <<-EOF
-    # Frontend server specific configuration
-    # ...
-  EOF
+  default = "# Frontend server specific configuration"
 }
 
 variable "other_user_data" {
   type    = string
-  default = <<-EOF
-    # Non-frontend server specific configuration
-    # ...
-  EOF
+  default = "# Non-frontend server specific configuration"
 }
