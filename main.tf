@@ -82,6 +82,9 @@ resource "hcloud_load_balancer_target" "this" {
   type             = "label_selector"
   label_selector   = "name=frontend"
   use_private_ip   = true
+  depends_on = [
+      hcloud_server.this
+  ]
 }
 
 # Add load balancer service
