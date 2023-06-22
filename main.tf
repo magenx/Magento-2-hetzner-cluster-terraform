@@ -83,7 +83,7 @@ resource "hcloud_load_balancer_target" "this" {
   label_selector   = "name=frontend"
   use_private_ip   = true
   depends_on = [
-      hcloud_server.this
+      hcloud_server.this["frontend"].id
   ]
 }
 
