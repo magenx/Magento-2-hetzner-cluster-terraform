@@ -47,16 +47,16 @@ variable "servers" {
 }
 
 variable "general_user_data" {
+  description = "cloud-init configuration"
   type    = string
-  default = "# General configuration"
 }
 
 variable "frontend_user_data" {
+  description = "cloud-init configuration"
   type    = string
-  default = "# Frontend server specific configuration"
 }
 
 variable "other_user_data" {
+  description = "cloud-init configuration"
   type    = string
-  default = "# Non-frontend server specific configuration"
 }
