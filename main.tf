@@ -135,3 +135,12 @@ resource "hcloud_server" "this" {
     ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
   EOF
 }
+
+
+output "ip1" {
+value = "hcloud_server.this["mariadb"][0].private_net[0].ip"
+}
+
+output "ip2" {
+value = "hcloud_server.this["mariadb"].network.ip"
+}
