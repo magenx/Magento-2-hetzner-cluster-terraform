@@ -21,7 +21,7 @@ runcmd:
       ADMIN_LAST_NAME="${admin_last_name}" \
       ADMIN_LOGIN="${admin_login}" \
       ADMIN_EMAIL="${admin_email}" \
-%{ if server_name != frontend ~}
+%{ if server_name != "frontend" ~}
       INSTALL_$${SERVER_NAME^^}="y" \
       $${SERVER_NAME^^}_SERVER_IP="${private_ip}" \
       bash -s -- lemp media firewall
