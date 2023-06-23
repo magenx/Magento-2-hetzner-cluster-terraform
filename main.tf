@@ -73,6 +73,7 @@ resource "hcloud_load_balancer" "this" {
 resource "hcloud_load_balancer_network" "this" {
   load_balancer_id = hcloud_load_balancer.this.id
   network_id       = hcloud_network.this.id
+  ip               = 
   enable_public_interface = false
 }
 
@@ -136,6 +137,6 @@ resource "hcloud_server" "this" {
   EOF
 }
 
-output "ip2" {
-value = hcloud_server.this["mariadb"].network[*].ip
+output "ips" {
+value = hcloud_server.this[*].network[*].ip
 }
