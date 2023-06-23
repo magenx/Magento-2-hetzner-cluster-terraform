@@ -29,7 +29,7 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="${hcloud_server.this[each.key].network[*].ip}" \
+      MARIADB_SERVER_IP="a" \
       REDIS_SERVER_IP="a" \
       RABBITMQ_SERVER_IP="a" \
       VARNISH_SERVER_IP="a" \
