@@ -62,15 +62,6 @@ resource "hcloud_network_subnet" "this" {
   ip_range     = "10.0.0.0/24"
 }
 
-# Create servers network
-resource "hcloud_server_network" "this" {
-  for_each   = var.servers
-  server_id  = hcloud_server.this[each.key].id
-  network_id = hcloud_network.this.id
-  subnet_id  = hcloud_network_subnet.this.id
-  ip         = cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)
-}
-
 # Create placement group
 resource "hcloud_placement_group" "this" {
   name        = "${var.project}-placement-group"
@@ -146,6 +137,7 @@ resource "hcloud_server" "this" {
   }
   network {
     network_id = hcloud_network.this.id
+    ip         = cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)
   }
   depends_on = [
     hcloud_network_subnet.this
@@ -183,12 +175,12 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="a" \
-      REDIS_SERVER_IP="a" \
-      RABBITMQ_SERVER_IP="a" \
-      VARNISH_SERVER_IP="a" \
-      ELASTICSEARCH_SERVER_IP="a" \
-      MEDIA_SERVER_IP="a" \
+      MARIADB_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)}" \
+      REDIS_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)}" \
+      RABBITMQ_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)}" \
+      VARNISH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)}" \
+      ELASTICSEARCH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)}" \
+      MEDIA_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
 EOF
