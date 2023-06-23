@@ -136,11 +136,6 @@ resource "hcloud_server" "this" {
   EOF
 }
 
-
-output "ip1" {
-value = hcloud_server.this["mariadb"].private_net
-}
-
 output "ip2" {
 value = hcloud_server.this["mariadb"].network
 }
