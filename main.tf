@@ -175,12 +175,12 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="${lookup(var.server_ips, "mariadb")}" \
-      REDIS_SERVER_IP="${lookup(var.server_ips, "redis")}" \
-      RABBITMQ_SERVER_IP="${lookup(var.server_ips, "rabbitmq")}" \
-      VARNISH_SERVER_IP="${lookup(var.server_ips, "varnish")}" \
-      ELASTICSEARCH_SERVER_IP="${lookup(var.server_ips, "elasticsearch")}" \
-      MEDIA_SERVER_IP="${lookup(var.server_ips, "media")}" \
+      MARIADB_SERVER_IP="${lookup(output.server_ips, "mariadb")}" \
+      REDIS_SERVER_IP="${lookup(output.server_ips, "redis")}" \
+      RABBITMQ_SERVER_IP="${lookup(output.server_ips, "rabbitmq")}" \
+      VARNISH_SERVER_IP="${lookup(output.server_ips, "varnish")}" \
+      ELASTICSEARCH_SERVER_IP="${lookup(output.server_ips, "elasticsearch")}" \
+      MEDIA_SERVER_IP="${lookup(output.server_ips, "media")}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
 EOF
