@@ -159,11 +159,11 @@ resource "hcloud_server" "this" {
     admin_email             = var.admin_email,
     ssh_password            = random_password.this.result,
     private_ip              = hcloud_server.this[each.key].network[*].ip,
-    mariadb_server_ip       = each.key == "frontend" ? cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1) : null,
-    redis_server_ip         = each.key == "frontend" ? cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1) : null,
-    rabbitmq_server_ip      = each.key == "frontend" ? cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1) : null,
-    varnish_server_ip       = each.key == "frontend" ? cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1) : null,
-    elasticsearch_server_ip = each.key == "frontend" ? cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1) : null,
-    media_server_ip         = each.key == "frontend" ? cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1) : null,
+    mariadb_server_ip       =  null,
+    redis_server_ip         =  null,
+    rabbitmq_server_ip      =  null,
+    varnish_server_ip       =  null,
+    elasticsearch_server_ip =  null,
+    media_server_ip         =  null,
   })
 }
