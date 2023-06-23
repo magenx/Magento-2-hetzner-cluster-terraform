@@ -142,9 +142,5 @@ resource "hcloud_server" "this" {
   depends_on = [
     hcloud_network_subnet.this
   ]
-  user_data = <<-EOF
-    #cloud-config
-    ${var.general_user_data}
-    ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
-  EOF
+  user_data = templatefile("${path.module}/user_data.tpl", {})
 }
