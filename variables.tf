@@ -46,17 +46,63 @@ variable "servers" {
   default     = {}
 }
 
-variable "general_user_data" {
-  description = "cloud-init configuration"
-  type    = string
+variable "domain" {
+  description = "Domain"
+  type        = string
 }
 
-variable "frontend_user_data" {
-  description = "cloud-init configuration"
-  type    = string
+variable "download_magento" {
+  description = "Download Magento"
+  type        = bool
 }
 
-variable "other_user_data" {
-  description = "cloud-init configuration"
-  type    = string
+variable "version_installed" {
+  description = "Magento Version Installed"
+  type        = string
 }
+
+variable "apply_magento_config" {
+  description = "Apply Magento Configuration"
+  type        = bool
+}
+
+variable "php_version" {
+  description = "PHP Version"
+  type        = string
+}
+
+variable "timezone" {
+  description = "Timezone"
+  type        = string
+}
+
+variable "locale" {
+  description = "Locale"
+  type        = string
+}
+
+variable "currency" {
+  description = "Currency"
+  type        = string
+}
+
+variable "admin_first_name" {
+  description = "Admin First Name"
+  type        = string
+}
+
+variable "admin_last_name" {
+  description = "Admin Last Name"
+  type        = string
+}
+
+variable "admin_login" {
+  description = "Admin Login"
+  type        = string
+}
+
+variable "admin_email" {
+  description = "Admin Email"
+  type        = string
+}
+
