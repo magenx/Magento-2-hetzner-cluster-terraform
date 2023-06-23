@@ -179,8 +179,3 @@ runcmd:
 %{ endif ~}
 EOF
 }
-
-
-data "hcloud_server" "s" {
-  name = "media"
-}
