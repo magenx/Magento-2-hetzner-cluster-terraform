@@ -144,6 +144,9 @@ resource "hcloud_server" "this" {
     ipv4_enabled = each.key == "varnish" ? true : false
     ipv6_enabled = false
   }
+  network {
+    network_id = hcloud_network.this.id
+  }
   depends_on = [
     hcloud_network_subnet.this
   ]
