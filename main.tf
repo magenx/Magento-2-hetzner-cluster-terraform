@@ -124,7 +124,7 @@ resource "hcloud_server" "this" {
   }
   network {
     network_id = hcloud_network.this.id
-    ip         = cidrhost(hcloud_network_subnet.this.ip_range, index(keys(hcloud_server.this), each.key))
+    ip         = cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key))
   }
   depends_on = [
     hcloud_network_subnet.this
