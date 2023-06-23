@@ -53,7 +53,7 @@ variable "domain" {
 
 variable "download_magento" {
   description = "Download Magento"
-  type        = bool
+  type        = string
 }
 
 variable "version_installed" {
@@ -63,7 +63,7 @@ variable "version_installed" {
 
 variable "apply_magento_config" {
   description = "Apply Magento Configuration"
-  type        = bool
+  type        = string
 }
 
 variable "php_version" {
