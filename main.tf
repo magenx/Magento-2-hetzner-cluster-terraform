@@ -158,7 +158,7 @@ resource "hcloud_server" "this" {
     admin_login             = var.admin_login,
     admin_email             = var.admin_email,
     ssh_password            = random_password.this.result,
-    private_ip              = hcloud_server.this[each.key].network[*].ip,
+    private_ip              =  null,
     mariadb_server_ip       =  null,
     redis_server_ip         =  null,
     rabbitmq_server_ip      =  null,
