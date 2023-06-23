@@ -136,7 +136,3 @@ resource "hcloud_server" "this" {
     ${each.key == "frontend" ? var.frontend_user_data : var.other_user_data}
   EOF
 }
-
-output "ips" {
-value = hcloud_server.this[*].network
-}
