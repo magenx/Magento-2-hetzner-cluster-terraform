@@ -24,6 +24,11 @@ resource "hcloud_ssh_key" "this" {
   labels     = local.labels
 }
 
+# Generate ssh password for debug
+resource "random_password" "this" {
+  length = 16
+}
+
 # Floating IP
 resource "hcloud_floating_ip" "this" {
   name      = "${var.project}-varnish-ip"
