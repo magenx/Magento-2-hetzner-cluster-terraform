@@ -34,6 +34,13 @@ resource "hcloud_floating_ip" "this" {
   labels    = local.labels
 }
 
+# Change rDNS for floating ip
+resource "hcloud_rdns" "this" {
+  floating_ip_id = hcloud_floating_ip.this.id
+  ip_address     = hcloud_floating_ip.this.ip_address
+  dns_ptr        = var.domain
+}
+
 # Create network with public IPv4 and private CIDR block
 resource "hcloud_network" "this" {
   name           = "${var.project}-network"
