@@ -138,5 +138,5 @@ resource "hcloud_server" "this" {
 }
 
 output "ips" {
-value = hcloud_server.this[*].network[*].ip
+value = hcloud_server.this[*].network
 }
