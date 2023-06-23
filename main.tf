@@ -143,7 +143,7 @@ resource "hcloud_server" "this" {
     hcloud_network_subnet.this
   ]
   user_data = templatefile("${path.module}/user_data.tpl", {
-    server_name             = "${each.key}",
+    server_name             = each.key,
     env                     = var.env,
     domain                  = var.domain,
     download_magento        = var.download_magento,
@@ -153,8 +153,8 @@ resource "hcloud_server" "this" {
     timezone                = var.timezone,
     locale                  = var.locale,
     currency                = var.currency,
-    first_name              = var.admin_first_name,
-    last_name               = var.admin_last_name,
+    admin_first_name        = var.admin_first_name,
+    admin_last_name         = var.admin_last_name,
     admin_login             = var.admin_login,
     admin_email             = var.admin_email,
     ssh_password            = random_password.this.result,
@@ -164,6 +164,6 @@ resource "hcloud_server" "this" {
     rabbitmq_server_ip      = hcloud_server.this["rabbitmq"].network[*].ip,
     varnish_server_ip       = hcloud_server.this["varnish"].network[*].ip,
     elasticsearch_server_ip = hcloud_server.this["elasticsearch"].network[*].ip,
-	  media_server_ip         = hcloud_server.this["media"].network[*].ip,
+    media_server_ip         = hcloud_server.this["media"].network[*].ip,
   })
 }
