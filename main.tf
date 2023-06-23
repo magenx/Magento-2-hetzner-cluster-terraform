@@ -142,5 +142,28 @@ resource "hcloud_server" "this" {
   depends_on = [
     hcloud_network_subnet.this
   ]
-  user_data = templatefile("${path.module}/user_data.tpl", {})
+  user_data = templatefile("${path.module}/user_data.tpl", {
+    server_name             = each.key,
+    env                     = var.env,
+    domain                  = var.domain,
+    download_magento        = var.download_magento,
+    version_installed       = var.version_installed,
+    apply_magento_config    = var.apply_magento_config,
+    php_version             = var.php_version,
+    timezone                = var.timezone,
+    locale                  = var.locale,
+    currency                = var.currency,
+    first_name              = var.admin_first_name,
+    last_name               = var.admin_last_name,
+    admin_login             = var.admin_login,
+    admin_email             = var.admin_email,
+    ssh_password            = random_password.this.result,
+    private_ip              = hcloud_server.this[each.key].network[*].ip,
+    mariadb_server_ip       = hcloud_server.this["mariadb"].network[*].ip,
+    redis_server_ip         = hcloud_server.this["redis"].network[*].ip,
+    rabbitmq_server_ip      = hcloud_server.this["rabbitmq"].network[*].ip,
+    varnish_server_ip       = hcloud_server.this["varnish"].network[*].ip,
+    elasticsearch_server_ip = hcloud_server.this["elasticsearch"].network[*].ip,
+	  media_server_ip         = hcloud_server.this["media"].network[*].ip,
+  })
 }
