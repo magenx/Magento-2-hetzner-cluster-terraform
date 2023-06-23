@@ -143,7 +143,7 @@ resource "hcloud_server" "this" {
     hcloud_network_subnet.this
   ]
   user_data = templatefile("${path.module}/user_data.tpl", {
-    server_name             = each.key,
+    server_name             = ${each.key},
     env                     = var.env,
     domain                  = var.domain,
     download_magento        = var.download_magento,
