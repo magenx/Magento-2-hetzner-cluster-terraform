@@ -73,7 +73,7 @@ resource "hcloud_load_balancer" "this" {
 resource "hcloud_load_balancer_network" "this" {
   load_balancer_id = hcloud_load_balancer.this.id
   network_id       = hcloud_network.this.id
-  #ip               = 
+  ip               = cidrhost(hcloud_network_subnet.this.ip_range, 100)
   enable_public_interface = false
 }
 
