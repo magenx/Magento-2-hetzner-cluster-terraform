@@ -185,10 +185,3 @@ runcmd:
 %{ endif ~}
 EOF
 }
-
-output "server_ips" {
-  value = {
-    for server_name, server_data in hcloud_server.this :
-    server_name => server_data.ip
-  }
-}
