@@ -138,9 +138,9 @@ resource "hcloud_server" "this" {
 
 
 output "ip1" {
-value = "hcloud_server.this["mariadb"][0].private_net[0].ip"
+value = hcloud_server.this["mariadb"][0].private_net[0].ip
 }
 
 output "ip2" {
-value = "hcloud_server.this["mariadb"].network.ip"
+value = hcloud_server.this["mariadb"].network.ip
 }
