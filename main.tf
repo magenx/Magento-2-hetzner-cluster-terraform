@@ -142,21 +142,46 @@ resource "hcloud_server" "this" {
   depends_on = [
     hcloud_network_subnet.this
   ]
-  user_data = templatefile("${path.module}/user_data.tpl", {
-    server_name             = each.key,
-    env                     = var.env,
-    domain                  = var.domain,
-    download_magento        = var.download_magento,
-    version_installed       = var.version_installed,
-    apply_magento_config    = var.apply_magento_config,
-    php_version             = var.php_version,
-    timezone                = var.timezone,
-    locale                  = var.locale,
-    currency                = var.currency,
-    admin_first_name        = var.admin_first_name,
-    admin_last_name         = var.admin_last_name,
-    admin_login             = var.admin_login,
-    admin_email             = var.admin_email,
-    ssh_password            = random_password.this.result,
-  })
+  user_data = <<-EOF
+#cloud-config
+chpasswd:
+  list: |
+    root:${random_password.this.result}
+  expire: false
+runcmd:
+    - |
+      curl -sSL -header "X-Config-Type: Cloud" "https://magenx.sh" | env \
+      PRIVATE_IP=$(curl -s http://169.254.169.254/hetzner/v1/metadata/private-networks | grep -m1 ip: | awk '{print $NF}') \
+      SERVER_NAME="${server_name}" \
+      DEBIAN_FRONTEND=noninteractive \
+      TERMS="y" \
+      ENV="${var.env}" \
+      DOMAIN="${var.domain}" \
+      DOWNLOAD_MAGENTO="${var.download_magento}" \
+      VERSION_INSTALLED="${var.version_installed}" \
+      APPLY_MAGENTO_CONFIG="${var.apply_magento_config}" \
+      PHP_VERSION="${var.php_version}" \
+      TIMEZONE="${var.timezone}" \
+      LOCALE="${var.locale}" \
+      CURRENCY="${var.currency}" \
+      ADMIN_FIRST_NAME="${var.admin_first_name}" \
+      ADMIN_LAST_NAME="${var.admin_last_name}" \
+      ADMIN_LOGIN="${var.admin_login}" \
+      ADMIN_EMAIL="${var.admin_email}" \
+%{ if each.key != "frontend" ~}
+      INSTALL_$${SERVER_NAME^^}="y" \
+      $${SERVER_NAME^^}_SERVER_IP="$${PRIVATE_IP}" \
+      bash -s -- lemp media firewall
+%{ else ~}
+      INSTALL_NGINX="y" \
+      INSTALL_PHP="y" \
+      MARIADB_SERVER_IP="${hcloud_server.this["mariadb"].network[*].ip}" \
+      REDIS_SERVER_IP="${hcloud_server.this["redis"].network[*].ip}" \
+      RABBITMQ_SERVER_IP="${hcloud_server.this["rabbitmq"].network[*].ip}" \
+      VARNISH_SERVER_IP="${hcloud_server.this["varnish"].network[*].ip}" \
+      ELASTICSEARCH_SERVER_IP="${hcloud_server.this["elasticsearch"].network[*].ip}" \
+      MEDIA_SERVER_IP="${hcloud_server.this["media"].network[*].ip}" \
+      bash -s -- lemp magento install config firewall
+%{ endif ~}
+EOF
 }
