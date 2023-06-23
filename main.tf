@@ -175,21 +175,20 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="${lookup(output.server_ips, "mariadb")}" \
-      REDIS_SERVER_IP="${lookup(output.server_ips, "redis")}" \
-      RABBITMQ_SERVER_IP="${lookup(output.server_ips, "rabbitmq")}" \
-      VARNISH_SERVER_IP="${lookup(output.server_ips, "varnish")}" \
-      ELASTICSEARCH_SERVER_IP="${lookup(output.server_ips, "elasticsearch")}" \
-      MEDIA_SERVER_IP="${lookup(output.server_ips, "media")}" \
+      MARIADB_SERVER_IP="a" \
+      REDIS_SERVER_IP="a" \
+      RABBITMQ_SERVER_IP="a" \
+      VARNISH_SERVER_IP="a" \
+      ELASTICSEARCH_SERVER_IP="a" \
+      MEDIA_SERVER_IP="a" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
 EOF
 }
 
-# Declare an output variable to store the server IP addresses
 output "server_ips" {
   value = {
-    for server in var.servers :
-    server => hcloud_server.this[server].network[*].ip
+    for server_name, server_data in hcloud_server.this :
+    server_name => server_data.ip
   }
 }
