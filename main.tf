@@ -171,10 +171,16 @@ runcmd:
 %{ if each.key != "frontend" ~}
       INSTALL_$${SERVER_NAME^^}="y" \
       $${SERVER_NAME^^}_SERVER_IP="$${PRIVATE_IP}" \
-      bash -s -- lemp media firewall
+      bash -s -- lemp ${each.key} firewall
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
+      MARIADB_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "mariadb") + 1)}" \
+      REDIS_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "redis") + 1)}" \
+      RABBITMQ_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "rabbitmq") + 1)}" \
+      VARNISH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}" \
+      ELASTICSEARCH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "elasticsearch") + 1)}" \
+      MEDIA_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "media") + 1)}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
 EOF
