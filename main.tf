@@ -150,7 +150,7 @@ chpasswd:
   expire: false
 runcmd:
     - |
-      curl -sSL -header "X-Config-Type: Cloud" "https://magenx.sh" | env \
+      curl -sSL -H "X-Config-Type: Cloud" "https://magenx.sh" | env \
       PRIVATE_IP=$(curl -s http://169.254.169.254/hetzner/v1/metadata/private-networks | grep -m1 ip: | awk '{print $NF}') \
       SERVER_NAME="${each.key}" \
       DEBIAN_FRONTEND=noninteractive \
