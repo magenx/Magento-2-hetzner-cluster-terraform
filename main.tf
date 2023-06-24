@@ -43,7 +43,7 @@ resource "hcloud_floating_ip" "this" {
 resource "hcloud_network_route" "this" {
   network_id  = hcloud_network.this.id
   destination = "0.0.0.0/0"
-  gateway     = toset(hcloud_server.this["varnish"].network[*].ip)[0]
+  gateway     = tolist(hcloud_server.this["varnish"].network[*].ip)[0]
 }
 
 # Change rDNS for floating ip
