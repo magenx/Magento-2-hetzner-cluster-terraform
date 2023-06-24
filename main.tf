@@ -39,6 +39,13 @@ resource "hcloud_floating_ip" "this" {
   labels    = local.labels
 }
 
+# Configure network route
+resource "hcloud_network_route" "this" {
+  network_id  = hcloud_network.this.id
+  destination = "0.0.0.0/0"
+  gateway     = hcloud_server.this["varnish"].network[*].ip
+}
+
 # Change rDNS for floating ip
 resource "hcloud_rdns" "this" {
   floating_ip_id = hcloud_floating_ip.this.id
