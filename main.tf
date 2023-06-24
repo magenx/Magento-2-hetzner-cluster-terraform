@@ -151,6 +151,28 @@ resource "hcloud_server" "this" {
   ]
   user_data = <<-EOF
 #cloud-config
+{% if each.key == "varnish" ~}
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true
+write_files:
+  - path: /etc/sysctl.d/99-ip-forward.conf
+    content: |
+      net.ipv4.ip_forward = 1
+runcmd:
+  - sysctl -p /etc/sysctl.d/99-ip-forward.conf
+  - iptables -t nat -A POSTROUTING -s 10.0.0.0/16 -o eth0 -j MASQUERADE
+{% else ~}
+network:
+  version: 2
+  ethernets:
+    eth0:
+      routes:
+        - to: 0.0.0.0/0
+          via: ${tolist(hcloud_server.this["varnish"].network[*].ip)[0]}
+{% endif ~}
 chpasswd:
   list: |
     root:${random_password.this.result}
