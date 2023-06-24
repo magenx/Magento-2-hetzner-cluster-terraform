@@ -4,6 +4,11 @@ variable "hcloud_token" {
   type        = string
 }
 
+variable "bearer" {
+  description = "Configuration auth password"
+  type        = string
+}
+
 variable "network_zone" {
   description = "Name of network zone"
   type        = string
