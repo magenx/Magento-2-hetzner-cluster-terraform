@@ -171,7 +171,7 @@ network:
     eth0:
       routes:
         - to: 0.0.0.0/0
-          via: ${tolist(hcloud_server.this["varnish"].network[*].ip)[0]}
+          via: ${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}
 {% endif ~}
 chpasswd:
   list: |
