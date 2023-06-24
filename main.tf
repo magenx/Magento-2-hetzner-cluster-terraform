@@ -190,11 +190,11 @@ runcmd:
       MEDIA_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "media") + 1)}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
-{% if each.key == "varnish" ~}
+%{ if each.key == "varnish" ~}
     - echo 1 > /proc/sys/net/ipv4/ip_forward
     - iptables -t nat -A POSTROUTING -s '10.0.0.0/16' -o eth0 -j MASQUERADE
-{% else ~}
+%{ else ~}
     - ip route add default via ${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}
-{% endif ~}
+%{ endif ~}
 EOF
 }
