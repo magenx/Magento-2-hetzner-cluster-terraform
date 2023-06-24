@@ -151,28 +151,6 @@ resource "hcloud_server" "this" {
   ]
   user_data = <<-EOF
 #cloud-config
-{% if each.key == "varnish" ~}
-network:
-  version: 2
-  ethernets:
-    eth0:
-      dhcp4: true
-write_files:
-  - path: /etc/sysctl.d/99-ip-forward.conf
-    content: |
-      net.ipv4.ip_forward = 1
-runcmd:
-  - sysctl -p /etc/sysctl.d/99-ip-forward.conf
-  - iptables -t nat -A POSTROUTING -s 10.0.0.0/16 -o eth0 -j MASQUERADE
-{% else ~}
-network:
-  version: 2
-  ethernets:
-    eth0:
-      routes:
-        - to: 0.0.0.0/0
-          via: ${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}
-{% endif ~}
 chpasswd:
   list: |
     root:${random_password.this.result}
@@ -212,5 +190,11 @@ runcmd:
       MEDIA_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "media") + 1)}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
+{% if each.key == "varnish" ~}
+    - echo 1 > /proc/sys/net/ipv4/ip_forward
+    - iptables -t nat -A POSTROUTING -s '10.0.0.0/16' -o eth0 -j MASQUERADE
+{% else ~}
+    - ip route add default via ${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}
+{% endif ~}
 EOF
 }
