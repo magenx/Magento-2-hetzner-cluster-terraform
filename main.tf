@@ -232,5 +232,5 @@ EOF
 }
 
 output "hcloud_servers" {
-  value = data.hcloud_servres.this
+  value = data.hcloud_servers.this
 }
