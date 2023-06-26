@@ -228,4 +228,5 @@ EOF
 
 output "hcloud_servers2" {
   value = hcloud_server.this
+  depends_on = [ hcloud_server.this  ]
 }
