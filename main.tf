@@ -39,13 +39,6 @@ resource "hcloud_floating_ip" "this" {
   labels    = local.labels
 }
 
-# Configure network route
-resource "hcloud_network_route" "this" {
-  network_id  = hcloud_network.this.id
-  destination = "0.0.0.0/0"
-  gateway     = tolist(hcloud_server.this["varnish"].network[*].ip)[0]
-}
-
 # Change rDNS for floating ip
 resource "hcloud_rdns" "this" {
   floating_ip_id = hcloud_floating_ip.this.id
@@ -139,8 +132,8 @@ resource "hcloud_server" "this" {
     "name" = each.key
   })
   public_net {
-    ipv4_enabled = each.key == "varnish" ? true : false
-    ipv6_enabled = false
+    ipv4_enabled = var.ipv4_enabled
+    ipv6_enabled = var.ipv6_enabled
   }
   network {
     network_id = hcloud_network.this.id
@@ -149,7 +142,48 @@ resource "hcloud_server" "this" {
   depends_on = [
     hcloud_network_subnet.this
   ]
-  user_data = <<-EOF
+}
+
+# Get servers data
+data "hcloud_servers" "this" {
+  with_selector = "app=${var.app}"
+  with_status   = ["running"]
+
+  #lifecycle {
+    #postcondition {
+      #condition     = variable == true"
+      #error_message = "condition not true"
+    #}
+
+  depends_on    = [ 
+    hcloud_server.this 
+  ]
+}
+
+# Servers configuration
+resource "terraform_data" "this" {
+  for_each = var.servers
+
+  connection {
+      host        = data.hcloud_servers.this
+      type        = "ssh"
+      user        = "root"
+      private_key = tls_private_key.this.public_key_openssh
+    }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cloud-init --file /tmp/cloud-init-config-${each.key}.yaml"
+    ]
+
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      "TF_VAR_server_output_${each.key}" = each.value
+    }
+  }
+
+  provisioner "file" {
+    content     = <<-EOF
 #cloud-config
 chpasswd:
   list: |
@@ -183,19 +217,20 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "mariadb") + 1)}" \
-      REDIS_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "redis") + 1)}" \
-      RABBITMQ_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "rabbitmq") + 1)}" \
-      VARNISH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}" \
-      ELASTICSEARCH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "elasticsearch") + 1)}" \
-      MEDIA_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "media") + 1)}" \
+      MARIADB_SERVER_IP="${data.hcloud_servers.this}" \
+      REDIS_SERVER_IP="${data.hcloud_servers.this}" \
+      RABBITMQ_SERVER_IP="${data.hcloud_servers.this}" \
+      VARNISH_SERVER_IP="${data.hcloud_servers.this}" \
+      ELASTICSEARCH_SERVER_IP="${data.hcloud_servers.this}" \
+      MEDIA_SERVER_IP="${data.hcloud_servers.this}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
-%{ if each.key == "varnish" ~}
-    - echo 1 > /proc/sys/net/ipv4/ip_forward
-    - iptables -t nat -A POSTROUTING -s '10.0.0.0/16' -o eth0 -j MASQUERADE
-%{ else ~}
-    - ip route add default via ${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}
-%{ endif ~}
 EOF
+
+    destination = "/tmp/cloud-init-config-${each.key}.yaml"
+  }
+}
+
+output "hcloud_servers" {
+  value = data.hcloud_servres.this
 }
