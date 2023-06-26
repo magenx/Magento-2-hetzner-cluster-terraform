@@ -230,10 +230,6 @@ output "server_ips" {
   value = hcloud_server.this
 }
 
-output "server_ips2" {
-  value = [for i in flatten(hcloud_server.this[*].network) : i.ip]
-}
-
 output "server_ips3" {
   value = hcloud_server.this["frontend"].network[*].ip
 }
