@@ -137,7 +137,7 @@ resource "hcloud_server" "this" {
   }
   network {
     network_id = hcloud_network.this.id
-    ip         = cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)
+    #ip         = cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), each.key) + 1)
   }
   depends_on = [
     hcloud_network_subnet.this
@@ -165,7 +165,7 @@ resource "terraform_data" "this" {
   for_each = var.servers
 
   connection {
-      host        = data.hcloud_servers.this
+      host        = data.hcloud_servers.this[each.key].ipv4_address
       type        = "ssh"
       user        = "root"
       private_key = tls_private_key.this.public_key_openssh
@@ -227,5 +227,5 @@ EOF
 }
 
 output "hcloud_servers" {
-  value = data.hcloud_servers.this
+  value = data.hcloud_servers.this["mariadb"].network
 }
