@@ -226,10 +226,6 @@ EOF
   }
 }
 
-output "hcloud_servers" {
-  value = tolist(hcloud_server.this["mariadb"].network[*].ip)[0]
-}
-
 output "hcloud_servers2" {
   value = hcloud_server.this
 }
