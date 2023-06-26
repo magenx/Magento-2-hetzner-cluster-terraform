@@ -227,5 +227,5 @@ EOF
 }
 
 output "hcloud_servers" {
-  value = data.hcloud_servers.this["mariadb"].network
+  value = data.hcloud_servers.this[*].network
 }
