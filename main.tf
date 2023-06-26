@@ -3,7 +3,7 @@ terraform {
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "1.40.0"
+      version = ">= 1.41.0"
     }
   }
 }
@@ -149,43 +149,7 @@ resource "hcloud_server" "this" {
   depends_on = [
     hcloud_network_subnet.this
   ]
-}
-
-# Get hetzner servers
-data "hcloud_servers" "this" {
-  with_selector = "app=${var.app}"
-  with_status   = ["running"]
-
-  #lifecycle {
-    #postcondition {
-      #condition     = variable == true"
-      #error_message = "condition not true"
-    #}
-
-  depends_on    = [ 
-    hcloud_server.this 
-  ]
-}
-
-# Servers configuration
-resource "terraform_data" "this" {
-  for_each = var.servers
-
-  connection {
-      host        = data.hcloud_servers.this
-      type        = "ssh"
-      user        = "root"
-      private_key = tls_private_key.this.public_key_openssh
-    }
-
-  provisioner "remote-exec" {
-    inline = [
-      "cloud-init --file /tmp/cloud-init-config.yaml"
-    ]
-  }
-
-  provisioner "file" {
-    content     = <<-EOF
+  user_data = <<-EOF
 #cloud-config
 chpasswd:
   list: |
@@ -219,12 +183,12 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="${data.hcloud_servers.this}" \
-      REDIS_SERVER_IP="${data.hcloud_servers.this}" \
-      RABBITMQ_SERVER_IP="${data.hcloud_servers.this}" \
-      VARNISH_SERVER_IP="${data.hcloud_servers.this}" \
-      ELASTICSEARCH_SERVER_IP="${data.hcloud_servers.this}" \
-      MEDIA_SERVER_IP="${data.hcloud_servers.this}" \
+      MARIADB_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "mariadb") + 1)}" \
+      REDIS_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "redis") + 1)}" \
+      RABBITMQ_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "rabbitmq") + 1)}" \
+      VARNISH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}" \
+      ELASTICSEARCH_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "elasticsearch") + 1)}" \
+      MEDIA_SERVER_IP="${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "media") + 1)}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
 %{ if each.key == "varnish" ~}
@@ -234,11 +198,4 @@ runcmd:
     - ip route add default via ${cidrhost(hcloud_network_subnet.this.ip_range, index(keys(var.servers), "varnish") + 1)}
 %{ endif ~}
 EOF
-
-    destination = "/tmp/cloud-init-config.yaml"
-  }
-}
-
-output "hcloud_servers" {
-  value = data.hcloud_servers.this
 }
