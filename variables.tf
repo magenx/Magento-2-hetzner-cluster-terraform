@@ -35,6 +35,16 @@ variable "protection" {
   type        = bool
 }
 
+variable "ipv4_enabled" {
+  description = "Enable or disable ipv4"
+  type        = bool
+}
+
+variable "ipv6_enabled" {
+  description = "Enable or disable ipv6"
+  type        = bool
+}
+
 locals {
   labels = {
     "project" = var.project
