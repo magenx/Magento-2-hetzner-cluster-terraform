@@ -227,10 +227,13 @@ EOF
 }
 
 output "server_ips" {
-  value = {
-    for server in data.hcloud_servers.this.servers : server.name => {
-      private_ip = server.private_net[0].ip
-      public_ip  = server.public_net.ipv4.ip
-    }
-  }
+  value = hcloud_server.this
+}
+
+output "server_ips2" {
+  value = hcloud_server.this[*].network
+}
+
+output "server_ips3" {
+  value = hcloud_server.this["frontend"].network[*].ip
 }
