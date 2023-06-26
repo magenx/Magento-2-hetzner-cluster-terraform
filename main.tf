@@ -144,28 +144,12 @@ resource "hcloud_server" "this" {
   ]
 }
 
-# Get servers data
-data "hcloud_servers" "this" {
-  with_selector = "app=${var.app}"
-  with_status   = ["running"]
-
-  #lifecycle {
-    #postcondition {
-      #condition     = variable == true"
-      #error_message = "condition not true"
-    #}
-
-  depends_on    = [ 
-    hcloud_server.this 
-  ]
-}
-
 # Servers configuration
 resource "terraform_data" "this" {
   for_each = var.servers
 
   connection {
-      host        = data.hcloud_servers.this[each.key].ipv4_address
+      host        = hcloud_server.this[each.key].ipv4_address
       type        = "ssh"
       user        = "root"
       private_key = tls_private_key.this.public_key_openssh
