@@ -212,12 +212,12 @@ runcmd:
 %{ else ~}
       INSTALL_NGINX="y" \
       INSTALL_PHP="y" \
-      MARIADB_SERVER_IP="${data.hcloud_servers.this}" \
-      REDIS_SERVER_IP="${data.hcloud_servers.this}" \
-      RABBITMQ_SERVER_IP="${data.hcloud_servers.this}" \
-      VARNISH_SERVER_IP="${data.hcloud_servers.this}" \
-      ELASTICSEARCH_SERVER_IP="${data.hcloud_servers.this}" \
-      MEDIA_SERVER_IP="${data.hcloud_servers.this}" \
+      MARIADB_SERVER_IP="${hcloud_server.this["mariadb"].network[*].ip}" \
+      REDIS_SERVER_IP="${hcloud_server.this["redis"].network[*].ip}" \
+      RABBITMQ_SERVER_IP="${hcloud_server.this["rabbitmq"].network[*].ip}" \
+      VARNISH_SERVER_IP="${hcloud_server.this["varnish"].network[*].ip}" \
+      ELASTICSEARCH_SERVER_IP="${hcloud_server.this["elasticsearch"].network[*].ip}" \
+      MEDIA_SERVER_IP="${hcloud_server.this["media"].network[*].ip}" \
       bash -s -- lemp magento install config firewall
 %{ endif ~}
 EOF
@@ -226,10 +226,3 @@ EOF
   }
 }
 
-output "server_ips" {
-  value = hcloud_server.this
-}
-
-output "server_ips3" {
-  value = hcloud_server.this["frontend"].network[*].ip
-}
