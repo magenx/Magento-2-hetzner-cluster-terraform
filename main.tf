@@ -175,11 +175,6 @@ resource "terraform_data" "this" {
     inline = [
       "cloud-init --file /tmp/cloud-init-config-${each.key}.yaml"
     ]
-
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      "TF_VAR_server_output_${each.key}" = each.value
-    }
   }
 
   provisioner "file" {
